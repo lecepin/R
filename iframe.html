@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+
+<body>
+  <div>
+    <button id="send">向IFRAME发送消息</button>
+    <fieldset>
+      <legend>主Window收到的消息</legend>
+      <textarea style="width: 100%" rows="5" id="log"></textarea>
+  </div>
+  
+  <hr />
+
+  <script>
+    window.addEventListener('message', function (e) {
+      const { data } = e;
+      document.getElementById('log').innerHTML = JSON.stringify(data, null, 2);
+      console.log('mainWindow:msg', e);
+    });
+
+    document.getElementById('send').onclick = () => {
+      document.querySelector('iframe').contentWindow.postMessage({window: '主窗口', msg: '我叫主窗口'}, '*')
+    }
+
+    const iframe = document.createElement('iframe');
+
+    iframe.frameBorder = false;
+    iframe.style.height = '200px';
+    iframe.style.width = '100%';
+    iframe.onload = () => {
+      iframe.contentDocument.open();
+      iframe.contentDocument.write(`
+        <!DOCTYPE html>
+        <html>
+
+        <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Document</title>
+        </head>
+
+        <body>
+          <div>
+            <button id="send">向主Window发送消息</button>
+            <fieldset>
+              <legend>IFRAME收到的消息</legend>
+              <textarea style="width: 100%" rows="5" id="log"></textarea>
+          </div>
+          
+          <script>
+            window.addEventListener('message', function (e) {
+              const { data } = e;
+              document.getElementById('log').innerHTML = JSON.stringify(data, null, 2);
+              console.log('iframeWindow:msg', e);
+            });
+
+            document.getElementById('send').onclick = () => {
+              window.parent.postMessage({window: 'iframe', msg: '我叫iframe'}, '*');
+            }
+          <\/script>
+        </body>
+
+        </html>     
+      `);
+      iframe.contentDocument.close();    
+    }
+
+
+
+    document.body.appendChild(iframe);
+  </script>
+</body>
+
+</html> 
