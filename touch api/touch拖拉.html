@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div
+      style="position: absolute; height: 100px; width: 100px; background: red"
+      id="aaa"
+    ></div>
+    <script>
+      var pointerStartPos = {};
+      var domDragStartPos = {};
+
+      window.onload = function () {
+        const el = aaa;
+        el.addEventListener("touchstart", handleStart, false);
+        el.addEventListener("touchend", handleStart, false);
+        el.addEventListener("touchmove", handleStart, false);
+        el.addEventListener("touchcancel", handleStart, false);
+      };
+
+      function handleStart(e) {
+        e.preventDefault();
+        if (e.type == "touchstart") {
+          pointerStartPos = {
+            x: e.touches[0].pageX,
+            y: e.touches[0].pageY,
+          };
+          domDragStartPos = {
+            x: aaa.offsetLeft,
+            y: aaa.offsetTop,
+          };
+        } else if (e.type == "touchmove") {
+          var pointerNewPos = {
+            x: e.touches[0].pageX,
+            y: e.touches[0].pageY,
+          };
+
+          var left = domDragStartPos.x + (pointerNewPos.x - pointerStartPos.x);
+          // 计算的拖拽块的top距离
+          var top = domDragStartPos.y + (pointerNewPos.y - pointerStartPos.y);
+
+          left = left < 0 ? 0 : left;
+          left =
+            left + aaa.clientWidth > document.documentElement.clientWidth
+              ? document.documentElement.clientWidth - aaa.clientWidth
+              : left;
+          top = top < 0 ? 0 : top;
+          top =
+            top + aaa.clientHeight > document.documentElement.clientHeight
+              ? document.documentElement.clientHeight - aaa.clientHeight
+              : top;
+          // 更新拖拽元素位置
+          aaa.style.left = left + "px";
+          aaa.style.top = top + "px";
+        } else if (e.type == "touchend" || e.type == "touchcancel") {
+        }
+      }
+    </script>
+  </body>
+</html>

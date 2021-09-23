@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div
+      style="position: absolute; height: 100px; width: 100px; background: red"
+      id="aaa"
+    ></div>
+    <script>
+      var pointerStartPos = {};
+      var domDragStartPos = {};
+      var startMouseMove = false;
+
+      window.onload = function () {
+        const el = aaa;
+        el.addEventListener("touchstart", handleStart, false);
+        el.addEventListener("touchend", handleStart, false);
+        el.addEventListener("touchmove", handleStart, false);
+        el.addEventListener("touchcancel", handleStart, false);
+        el.addEventListener("mousedown", handleStart, false);
+        window.addEventListener("mousemove", handleStart, false);
+        window.addEventListener("mouseup", handleStart, false);
+      };
+
+      function handleStart(e) {
+        e.preventDefault();
+
+        if (e.type == "touchstart" || e.type == "mousedown") {
+          startMouseMove = true;
+          pointerStartPos = {
+            x: e.touches?.[0].pageX || e.pageX,
+            y: e.touches?.[0].pageY || e.pageY,
+          };
+          domDragStartPos = {
+            x: aaa.offsetLeft,
+            y: aaa.offsetTop,
+          };
+        } else if (e.type == "touchmove" || e.type == "mousemove") {
+          if (!startMouseMove) {
+            return;
+          }
+
+          var pointerNewPos = {
+            x: e.touches?.[0].pageX || e.pageX,
+            y: e.touches?.[0].pageY || e.pageY,
+          };
+
+          var left = domDragStartPos.x + (pointerNewPos.x - pointerStartPos.x);
+          var top = domDragStartPos.y + (pointerNewPos.y - pointerStartPos.y);
+
+          // 边界判断
+          left = left < 0 ? 0 : left;
+          left =
+            left + aaa.clientWidth > document.documentElement.clientWidth
+              ? document.documentElement.clientWidth - aaa.clientWidth
+              : left;
+          top = top < 0 ? 0 : top;
+          top =
+            top + aaa.clientHeight > document.documentElement.clientHeight
+              ? document.documentElement.clientHeight - aaa.clientHeight
+              : top;
+
+          // 更新拖拽元素位置
+          aaa.style.left = left + "px";
+          aaa.style.top = top + "px";
+        } else if (
+          e.type == "touchend" ||
+          e.type == "touchcancel" ||
+          e.type == "mouseup"
+        ) {
+          startMouseMove = false;
+        }
+      }
+    </script>
+  </body>
+</html>
